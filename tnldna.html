@@ -1,0 +1,47 @@
+import random
+
+class Minesweeper:
+    def __init__(self, level):
+        if level == '쉬움':
+            self.rows, self.cols, self.mines = 9, 9, 10
+        elif level == '중간':
+            self.rows, self.cols, self.mines = 16, 16, 40
+        elif level == '어려움':
+            self.rows, self.cols, self.mines = 16, 30, 99
+        else:
+            raise ValueError("난이도는 '쉬움', '중간', '어려움' 중 하나여야 합니다.")
+        
+        self.board = [['0' for _ in range(self.cols)] for _ in range(self.rows)]
+        self.mine_locations = set()
+        self._place_mines()
+        self._calculate_numbers()
+    
+    def _place_mines(self):
+        while len(self.mine_locations) < self.mines:
+            r = random.randint(0, self.rows - 1)
+            c = random.randint(0, self.cols - 1)
+            self.mine_locations.add((r, c))
+            self.board[r][c] = '*'
+    
+    def _calculate_numbers(self):
+        directions = [(-1,-1), (-1,0), (-1,1), (0,-1), (0,1), (1,-1), (1,0), (1,1)]
+        for r in range(self.rows):
+            for c in range(self.cols):
+                if self.board[r][c] == '*':
+                    continue
+                count = 0
+                for dr, dc in directions:
+                    nr, nc = r + dr, c + dc
+                    if 0 <= nr < self.rows and 0 <= nc < self.cols:
+                        if self.board[nr][nc] == '*':
+                            count += 1
+                self.board[r][c] = str(count)
+    
+    def print_board(self):
+        for row in self.board:
+            print(' '.join(row))
+
+# 테스트
+level = input("난이도를 선택하세요 (쉬움, 중간, 어려움): ")
+game = Minesweeper(level)
+game.print_board()
